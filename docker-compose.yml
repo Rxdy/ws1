@@ -1,0 +1,62 @@
+services:
+    # client:
+    #     container_name: abyss-client
+    #     build: client/
+    #     ports:
+    #         - "4200:4200"
+    #     working_dir: /client
+    #     command: sh -c "npm install && npm run dev"
+    #     volumes:
+    #         - ./client:/client
+    #     environment:
+    #         - VITE_API_URL=http://localhost:3000
+    #     networks:
+    #         - abyss-net
+    #     stop_grace_period: 1s
+    server:
+        image: oven/bun:1-alpine
+        container_name: ws-server
+        working_dir: /app
+        ports:
+            - "3000:3000"
+        volumes:
+            - ./server:/app
+        # env_file:
+        #     - server/env/.env.dev
+        networks:
+            - ws-net
+        command: "sh -c 'bun --watch src/app.ts'"
+        # depends_on:
+        #     - mysql
+        stop_grace_period: 1s
+        restart: always
+
+    # mysql:
+    #     image: mysql:8
+    #     container_name: abyss-sql
+    #     env_file:
+    #         - server/env/.env.dev
+    #     volumes:
+    #         - ./server/env/sql/initUser.sql:/docker-entrypoint-initdb.d/init.sql
+    #         - db-data-abyss:/var/lib/mysql
+    #     networks:
+    #         - abyss-net
+    #     stop_grace_period: 1s
+    # phpmyadmin:
+    #     image: phpmyadmin:5
+    #     container_name: abyss-pma
+    #     ports:
+    #         - "8080:80"
+    #     env_file:
+    #         - server/env/.env.dev
+    #     networks:
+    #         - abyss-net
+    #     depends_on:
+    #         - mysql
+    #     stop_grace_period: 1s
+networks:
+    ws-net:
+        driver: bridge
+
+volumes:
+    ws-data: {}
